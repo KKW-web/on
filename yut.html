@@ -9,7 +9,7 @@
 <style>
 body{margin:0}
 /* 배치: 색동 띠 → 차례·점수 → 놀이판(윷놀이 말판 · 짝 맞추기 카드 · 두더지 밭) 또는 문제 카드 → 맨 아래 세종대왕님과 말풍선
-   흐름: 첫 화면 → (한글날 이야기 → 몸풀기 퀴즈) → 놀이 고르기 → 캐릭터 만들기 → 차례 뽑기 → 놀이 → 상장 */
+   흐름: 첫 화면 → (한글날 이야기 → 몸풀기 퀴즈) → 놀이 고르기 → 잔치 탐험대 준비 → 차례 뽑기 → 놀이 → 상장 */
 :root{
   --bg:#DCEFEA; --paper:#FFFDF6; --paper2:#F1F8F5;
   --ink:#1E2A4A; --ink-soft:#55628C; --line:#BFD9D2; --edge:#1E2A4A;
@@ -459,7 +459,7 @@ h3{font-family:var(--font-display); font-weight:400; margin:0}
 }
 .fdnote{margin:0; font-size:.85rem; color:var(--ink-soft); max-width:40em}
 
-/* ================= 캐릭터 고르기 · 세 가지 놀이 ================= */
+/* ================= 탐험대·단계 확인 · 세 가지 놀이 ================= */
 :root{--purple:#8E6CE0; --orange:#F08A3C}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--purple:#B39CFF; --orange:#FFA869} }
 :root[data-theme="dark"]{--purple:#B39CFF; --orange:#FFA869}
@@ -506,7 +506,7 @@ h3{font-family:var(--font-display); font-weight:400; margin:0}
 .mtxt small{font-size:.9rem; line-height:1.4; color:var(--ink-soft)}
 .opts{display:flex; flex-direction:column; gap:8px; align-items:center}
 
-/* 캐릭터 만들기 */
+/* 잔치 탐험대 준비 */
 .ptabs{display:flex; gap:8px; flex-wrap:wrap; justify-content:center}
 .ptab{
   display:flex; align-items:center; gap:6px; font-family:var(--font-display); font-size:1.05rem;
@@ -3149,7 +3149,7 @@ function setKing(t,mood){ S.king=t; S.kmood=mood||"idle"; }
 /* 이름 뒤에 붙는 조사 고르기: 받침이 있으면 a, 없으면 b */
 function bat(w){ const c=w.charCodeAt(w.length-1); return (c>=0xAC00&&c<=0xD7A3) ? (c-0xAC00)%28!==0 : /[013678lmnr]$/i.test(w); }
 const J = (w,a,b) => w+(bat(w)?a:b);
-function saveSetup(){ store.set("hq-setup9",{players:S.players, bench:S.bench, mode:S.mode, opt:S.opt}); }
+function saveSetup(){ if(parent!==window&&parent.schoolUpdateExplorerName)S.players.slice(0,2).forEach((p,i)=>parent.schoolUpdateExplorerName(i===0?"p1":"p2",p.name)); store.set("hq-setup9",{players:S.players, bench:S.bench, mode:S.mode, opt:S.opt}); }
 /* 인원 바꾸기: 줄이면 뒤에서부터 잠시 쉬게 하고, 늘리면 쉬던 캐릭터를 먼저 다시 부른다 */
 function newPlayer(){ const usedA=S.players.map(x=>x.animal), a=ANKEYS.find(k=>!usedA.includes(k))||"bear"; return {name:AN[a].n,animal:a,g:N()%2?"m":"f",age:"kid",lv:2}; }
 function setCount(n){
@@ -3293,7 +3293,7 @@ const TRACKS = {
     chords:"G G Em G Em G D G G Em G D Em G Em G",
     arp:{ins:"gaya", v:.07, pat:[0,2,1,2,0,2,1,2]}, bass:{v:.1, at:[0,4]},
     perc:[[[0,"kung",.09],[4,"deok",.04],[6,"deok",.03]]], jing:8 },
-  lobby:{ u:.21, bar:8, vol:1,                                // 놀이·캐릭터 고르기: 가야금의 가벼운 가락
+  lobby:{ u:.21, bar:8, vol:1,                                // 놀이·탐험대·단계 확인: 가야금의 가벼운 가락
     mel:{ins:"gaya", v:.15, s:"5 6 1':2 6 5 3:2 | 5 3 2:2 1:4 | 2 3 5:2 6 5 3:2 | 2:2 3:2 2:4 | 5 6 1':2 2' 1' 6:2 | 5 6 5 3 2:4 | 1 2 3 5 6:2 5:2 | 3:2 2:2 1:4"},
     harm:{ins:"dae", v:.06, s:"3:4 5:4 | 3:4 1:4 | 6,:4 3:4 | 2:8 | 3:4 6:4 | 3:4 2:4 | 1:4 3:4 | 2:4 1:4"},
     chords:"G G Em D G Em G G", arp:{ins:"mbox", v:.05, pat:[0,null,2,null,1,null,2,null]}, bass:{v:.11, at:[0,3,6]},
@@ -3503,7 +3503,7 @@ function nextQ(pool){
 
 /* ================= 시작 · 차례 뽑기 ================= */
 function goMode(){ S.phase="mode"; S.cur=null; busy=false; setKing("어떤 놀이를 할꼬? 마음에 드는 것을 고르거라.","wave"); render(); }
-function goPlayers(){ S.phase="players"; S.edit=Math.min(S.edit,N()-1); setKing("제 캐릭터를 꾸며 보거라. 이름도 지어 주려무나.","wave"); render(); }
+function goPlayers(){ S.phase="players"; S.edit=Math.min(S.edit,N()-1); setKing("함께할 인원과 단계를 고르고, 잔치 한복으로 꾸며 보거라.","wave"); render(); }
 function startGame(){
   S.players.forEach(p=>{ p.name=safeName(p.name).trim()||AN[p.animal].n; });
   saveSetup();
@@ -4036,7 +4036,7 @@ function gainJamo(n){
   return {from, to:bag.got, full};
 }
 const jamoGot = g => { const j=JAMO[g.from]; return !j||g.to<=g.from ? "" : g.full ? `한글 조각 '${j[0]}'까지 모아 스물넉 자를 모두 모았어요!` : `한글 조각 '${j[0]}'(${j[1]})${bat(j[1])?"을":"를"} 얻었어요.`; };
-const newDecoLine = () => S.newDeco&&S.newDeco.length ? `<p class="newdeco">🎁 새 꾸미기를 열었어요: <b>${S.newDeco.join(", ")}</b> · 캐릭터 만들기의 '꾸미기'에서 써 볼 수 있어요</p>` : "";
+const newDecoLine = () => S.newDeco&&S.newDeco.length ? `<p class="newdeco">🎁 새 꾸미기를 열었어요: <b>${S.newDeco.join(", ")}</b> · 잔치 탐험대 준비의 '꾸미기'에서 써 볼 수 있어요</p>` : "";
 function calendar(){
   const d=new Date(), y=d.getFullYear(), m=d.getMonth(), first=new Date(y,m,1).getDay(), days=new Date(y,m+1,0).getDate(), td=d.getDate(), pre=`${y}-${pad2(m+1)}-`;
   let cells=""; for(let i=0;i<first;i++) cells+=`<i class="cd e"></i>`;
@@ -4308,13 +4308,13 @@ function viewMode(){
     <h2>어떤 놀이를 할까요?</h2>
     <div class="modes">${Object.keys(MODES).map(k=>`<button class="modecard" id="mode-${k}" data-act="setmode" data-n="${k}" aria-pressed="${S.mode===k}">${MODEART[k]}<span class="mtxt"><span class="tag">${MODES[k].tag}</span><b>${MODES[k].n}</b><small>${MODES[k].d}</small></span></button>`).join("")}</div>
     <div class="opts">${opts}</div>
-    <div class="navrow"><button class="btn" id="toPlayersBtn" data-act="players">캐릭터 고르기</button></div>`;
+    <div class="navrow"><button class="btn" id="toPlayersBtn" data-act="players">탐험대·단계 확인</button></div>`;
 }
 function viewPlayers(){
   const e=Math.min(S.edit,N()-1), p=S.players[e];
   const tabs=PI().map(i=>`<button class="ptab" id="ptab-${i}" data-act="pedit" data-n="${i}" aria-pressed="${i===e}">${avatar(i)}<span id="ptabname-${i}">${nm(i)||AN[S.players[i].animal].n}</span></button>`).join("");
   return `
-    <div class="eyebrow">캐릭터 만들기 · ${MODES[S.mode].n}</div>
+    <div class="eyebrow">잔치 탐험대 준비 · ${MODES[S.mode].n}</div>
     <div class="phead"><h2>몇 명이 함께할까요?</h2>${seg("인원","pcount",[[1,"혼자"],[2,"2명"],[3,"3명"],[4,"4명"],[5,"5명"]],N())}</div>
     <div class="ptabs">${tabs}</div>
     <div class="pedit">
@@ -4891,6 +4891,7 @@ boot({});
 if(parent!==window&&parent.schoolName){
  S.players=DEFAULT_PLAYERS.slice(0,2).map((p,i)=>{const id=i===0?'p1':'p2',cfg=parent.schoolExplorer?.(id)||{},animal=({bunny:'rabbit',dino:'tiger',bear:'bear',cat:'cat',fox:'fox',panda:'panda'})[cfg.suit];return {...p,name:parent.schoolName(id),animal:AN[animal]?animal:p.animal,age:'kid',lv:S.players[i]?.lv||1};});
  S.sound=true;S.music=false;S.phase='title';render();
+ document.getElementById('musicBtn').hidden=true;
  window.schoolSetGuide=v=>{S.sound=Boolean(v);};
 }
 
