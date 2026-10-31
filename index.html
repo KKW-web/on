@@ -132,9 +132,9 @@ const oldStart=start,oldRender=renderQuestion,oldHint=hint,oldRenderWord=renderW
 start=function(){stop();tabs('play');round=0;sessionAnswered=0;settingsUI();if(game.id==='memory'){startMemory();return;}deck=makeExtendedDeck();renderQuestion();};
 function renderChoices(values){q.options=values;el('answerArea').innerHTML=values.map((v,i)=>`<button class="answer" data-option="${i}">${v}</button>`).join('');el('answerArea').onclick=e=>{const b=e.target.closest('[data-option]');if(b&&!solved)checkAnswer(q.options[Number(b.dataset.option)],b);};}
 function numberOptions(answer){const diffs=shuffle([-10,-5,-2,-1,1,2,5,10]);return shuffle([answer,...diffs.map(d=>answer+d).filter(v=>v>=0&&v!==answer).slice(0,levelFor()>=3?3:2)]);}
-renderQuestion=function(){const L=levelFor();if(['numbers','patterns','letters'].includes(game.id)){stop();solved=false;q=deck[round];el('feedback').textContent='';el('next').hidden=true;el('hint').disabled=false;el('hint').hidden=false;el('answerArea').innerHTML='';if(game.id==='numbers'){el('prompt').textContent=L===1?'사과는 모두 몇 개일까요?':q.blank?'빈칸에 들어갈 수를 찾아요':'차근차근 계산해 볼까요?';el('visual').innerHTML=L===1?`<div class="objects">${'<span>🍎</span>'.repeat(q.a)}</div>`:`<span class="rule-tag">${q.rule}</span><div class="math-expression">${q.expression}${q.blank?'':' = ?'}</div>`;renderChoices(numberOptions(q.answer));}else if(game.id==='patterns'){el('prompt').textContent='규칙 단서를 읽고 다음을 찾아요';el('visual').innerHTML=`<p class="rule-tag">${q.rule}</p><div class="pattern-line">${q.sequence.map(x=>'<span class="pattern-unit">'+x+'</span>').join('')}<span class="pattern-unit">?</span></div>`;renderChoices(typeof q.answer==='number'?numberOptions(q.answer):options(q.answer,ICONS.concat(['🍌','⭐']),L===1?3:4));}else if(L===5){el('prompt').textContent='바르게 쓴 낱말을 골라요';q.answer=q.word;el('visual').innerHTML=`<div class="picture">${q.pic}</div>`;renderChoices(shuffle(q.spellings));}else{const c=L===4?q.word.at(-1):q.word[0],parts=syllableParts(c);q.answer=L===1?c:L===2?parts.initial:L===3?parts.medial:parts.final;el('prompt').textContent=`‘${q.word}’의 ${L===1?'첫 글자':L===2?'첫 글자 초성':L===3?'첫 글자 모음':'마지막 글자 받침'}를 찾아요`;el('visual').innerHTML=`<div class="picture">${q.pic}</div><div class="country-name">${q.word}</div>`;renderChoices(options(q.answer,L===1?WORDS.map(w=>w.word[0]):L===2?INITIALS:L===3?MEDIALS:FINALS, L===1?3:4));}}else if(game.id==='flags'&&L===5){stop();solved=false;q=deck[round];el('feedback').textContent='';el('next').hidden=true;el('hint').disabled=false;el('prompt').textContent='이 국기의 나라 이름을 완성해요';el('visual').innerHTML=flag(q.country[1])+'<div class="slots" id="wordSlots"></div>';wordParts=shuffle([...q.word].map((c,i)=>({c,id:i})));wordPicked=[];wordDone=false;renderWord();}else{oldRender();if(game.id==='words'){el('prompt').textContent='그림의 낱말을 글자 조각으로 만들어요';el('visual').innerHTML=`<div class="picture">${q.pic}</div>${L===1?'<div class="country-name">'+q.word+'</div>':''}<div class="slots" id="wordSlots"></div>`;if(L===5)wordParts=shuffle(wordParts.concat([{c:'마',id:100},{c:'부',id:101}]));renderWord();}if(game.id==='flags')renderChoices(options(q.country[0],COUNTRIES.slice(0,L===1?4:L===2?6:8).map(c=>c[0]),L>=4?4:L===1?2:3));}el('roundText').textContent=preferences.length?`${round+1} / ${deck.length}번째 발견`:`계속 탐험 · ${sessionAnswered+1}번째`;el('roundDots').textContent=`${L}단계`;if(audioOn)say(promptSpeech());};
+renderQuestion=function(){const L=levelFor();if(['numbers','patterns','letters'].includes(game.id)){stop();solved=false;q=deck[round];el('feedback').textContent='';el('next').hidden=true;el('hint').disabled=false;el('hint').hidden=false;el('answerArea').innerHTML='';if(game.id==='numbers'){el('prompt').textContent=L===1?'사과는 모두 몇 개일까요?':q.blank?'빈칸에 들어갈 수를 찾아요':'차근차근 계산해 볼까요?';el('visual').innerHTML=L===1?`<div class="objects">${'<span>🍎</span>'.repeat(q.a)}</div>`:`<span class="rule-tag">${q.rule}</span><div class="math-expression">${q.expression}${q.blank?'':' = ?'}</div>`;renderChoices(numberOptions(q.answer));}else if(game.id==='patterns'){el('prompt').textContent='규칙 단서를 읽고 다음을 찾아요';el('visual').innerHTML=`<p class="rule-tag">${q.rule}</p><div class="pattern-line">${q.sequence.map(x=>'<span class="pattern-unit">'+x+'</span>').join('')}<span class="pattern-unit">?</span></div>`;renderChoices(typeof q.answer==='number'?numberOptions(q.answer):options(q.answer,ICONS.concat(['🍌','⭐']),L===1?3:4));}else if(L===5){el('prompt').textContent='바르게 쓴 낱말을 골라요';q.answer=q.word;el('visual').innerHTML=`<div class="picture">${q.pic}</div>`;renderChoices(shuffle(q.spellings));}else{const c=L===4?q.word.at(-1):q.word[0],parts=syllableParts(c);q.answer=L===1?c:L===2?parts.initial:L===3?parts.medial:parts.final;el('prompt').textContent=`‘${q.word}’의 ${L===1?'첫 글자':L===2?'첫 글자 초성':L===3?'첫 글자 모음':'마지막 글자 받침'}를 찾아요`;el('visual').innerHTML=`<div class="picture">${q.pic}</div><div class="country-name">${q.word}</div>`;renderChoices(options(q.answer,L===1?WORDS.map(w=>w.word[0]):L===2?INITIALS:L===3?MEDIALS:FINALS, L===1?3:4));}}else if(game.id==='flags'&&L===5){stop();solved=false;q=deck[round];el('feedback').textContent='';el('next').hidden=true;el('hint').disabled=false;el('prompt').textContent='이 국기의 나라 이름을 완성해요';el('visual').innerHTML=flag(q.country[1])+'<div class="slots" id="wordSlots"></div>';wordParts=shuffle([...q.word].map((c,i)=>({c,id:i})));wordPicked=[];wordDone=false;renderWord();}else{const guideBefore=audioOn;audioOn=false;try{oldRender();}finally{audioOn=guideBefore;}if(game.id==='words'){el('prompt').textContent='그림의 낱말을 글자 조각으로 만들어요';el('visual').innerHTML=`<div class="picture">${q.pic}</div>${L===1?'<div class="country-name">'+q.word+'</div>':''}<div class="slots" id="wordSlots"></div>`;if(L===5)wordParts=shuffle(wordParts.concat([{c:'마',id:100},{c:'부',id:101}]));renderWord();}if(game.id==='flags')renderChoices(options(q.country[0],COUNTRIES.slice(0,L===1?4:L===2?6:8).map(c=>c[0]),L>=4?4:L===1?2:3));}el('roundText').textContent=preferences.length?`${round+1} / ${deck.length}번째 발견`:`계속 탐험 · ${sessionAnswered+1}번째`;el('roundDots').textContent=`${L}단계`;if(audioOn)say(promptSpeech());};
 promptSpeech=function(){if(game.id==='numbers')return q.expression.replaceAll('−',' 빼기 ').replaceAll('+',' 더하기 ').replaceAll('×',' 곱하기 ').replaceAll('÷',' 나누기 ').replaceAll('□',' 빈칸 ').replaceAll('=',' 는 ')+'. 답을 찾아볼까?';if(game.id==='words'||game.id==='letters'&&levelFor()===5)return q.word+'. 글자를 잘 살펴봐요.';return el('prompt').textContent;};
-renderWord=function(){oldRenderWord();el('answerArea').querySelectorAll('[data-piece]').forEach(b=>b.addEventListener('click',()=>{if(audioOn&&!solved)say(b.textContent);},{once:true}));};
+renderWord=function(){oldRenderWord();};
 hint=function(){if(game.id==='memory'){previewMemory();return;}if(game.id==='numbers'){el('feedback').textContent=q.explanation;if(audioOn)say(q.explanation);return;}if(game.id==='patterns'){el('feedback').textContent=q.hint;if(audioOn)say(q.hint);return;}if(game.id==='letters'){el('feedback').textContent=levelFor()===5?`바른 낱말은 ‘${q.word}’예요. 글자를 하나씩 비교해 봐요.`:`찾을 글자는 ‘${q.answer}’예요. 낱말 속에서 찾아볼까요?`;return;}oldHint();};
 const oldSuccess=success;success=function(text){if(solved)return;sessionAnswered++;oldSuccess(text);el('next').textContent=!preferences.length?'다음 발견 →':round===deck.length-1?'탐험 마무리 →':'다음 발견 →';};
 startMemory=function(){stop();solved=false;const pairs=PAIRS[levelFor()-1],icons=shuffle(ICONS).slice(0,pairs);memory={cards:shuffle(icons.flatMap((pic,pair)=>[{pic,pair},{pic,pair}])),matched:new Set(),open:[],locked:false,preview:true,pairs};el('prompt').textContent='그림과 이름, 위치를 충분히 살펴봐요';el('roundText').textContent=`0 / ${pairs}쌍 발견 · ${pairs*2}장`;el('roundDots').textContent=levelFor()+'단계';el('feedback').textContent='준비가 되면 가리고 시작해요. 도움 버튼으로 다시 볼 수도 있어요.';el('next').hidden=true;el('hint').hidden=false;el('hint').disabled=false;el('visual').innerHTML='<div id="memoryGrid" class="memory-grid expanded-memory"></div>';el('answerArea').innerHTML='<button class="primary" id="hideMemory">가리고 시작</button>';el('hideMemory').onclick=hideMemory;renderMemory();};
@@ -194,43 +194,25 @@ for(const id of ['visual','answerArea','feedback','prompt'])surfaceObserver.obse
 surfaceObserver.observe(document.querySelector('header'),{attributes:true,subtree:true,childList:true,attributeFilter:['hidden']});
 window.addEventListener('resize',queueFit);window.visualViewport?.addEventListener('resize',queueFit);queueFit();
 
-/* Real system voices are separate from speaking style. Do not invent voice identities. */
-const VOICE_STYLES={soft:{rate:.9,pitch:1,label:'자연스럽게 · 기본 음높이'},bright:{rate:1.08,pitch:1.35,label:'밝은 친구 · 빠르고 높은 말투'},calm:{rate:.72,pitch:.8,label:'차분한 선생님 · 느리고 낮은 말투'}};
-try{const raw=JSON.parse(localStorage.getItem('spark-settings-v2'));if(raw&&Number.isFinite(raw.voiceRate)&&Number.isFinite(raw.voicePitch)){preferences.voiceRate=Math.max(.6,Math.min(1.3,raw.voiceRate));preferences.voicePitch=Math.max(.7,Math.min(1.5,raw.voicePitch));}}catch{}
-const style=VOICE_STYLES[preferences.tone]||VOICE_STYLES.soft;
-if(!Number.isFinite(preferences.voiceRate))preferences.voiceRate=style.rate;
-if(!Number.isFinite(preferences.voicePitch))preferences.voicePitch=style.pitch;
-el('voiceChoice').parentElement.hidden=true;
-el('voiceChoice').parentElement.insertAdjacentHTML('beforebegin','<h3>1. 실제 목소리 선택</h3><p class="voice-note">이 기기에서 제공하는 한국어 목소리예요. 같은 문장으로 비교해 보세요.</p><div id="voiceOptions" class="voice-options"></div>');
-el('voiceTone').innerHTML=Object.entries(VOICE_STYLES).map(([id,v])=>`<option value="${id}">${v.label}</option>`).join('')+'<option value="custom">직접 조절</option>';
-el('voiceTone').parentElement.insertAdjacentHTML('beforebegin','<h3>2. 말투 조절</h3><p class="voice-note">선택한 목소리의 속도와 높이를 바꿔요. 다른 사람의 목소리로 바뀌는 기능은 아니에요.</p>');
-el('voiceTone').parentElement.insertAdjacentHTML('afterend','<div class="voice-sliders"><label>읽는 속도<input id="voiceRate" aria-label="읽는 속도" type="range" min="0.6" max="1.3" step="0.02"><output id="rateValue"></output></label><label>목소리 높이<input id="voicePitch" aria-label="목소리 높이" type="range" min="0.7" max="1.5" step="0.05"><output id="pitchValue"></output></label></div>');
-el('voicePreview').insertAdjacentHTML('afterend','<button id="voiceStop">■ 듣기 멈춤</button><p id="voiceStatus" class="voice-status" role="status" aria-live="polite"></p>');
-function selectedSystemVoice(){return koreanVoices.find(v=>v.voiceURI===preferences.voice)||koreanVoices.find(v=>/google|sunhi|yuna/i.test(v.name))||koreanVoices[0];}
-voiceConfig=function(){return {voice:selectedSystemVoice(),rate:preferences.voiceRate,pitch:preferences.voicePitch};};
-function voiceControls(){el('voiceTone').value=preferences.tone;el('voiceRate').value=preferences.voiceRate;el('voicePitch').value=preferences.voicePitch;el('rateValue').textContent=preferences.voiceRate.toFixed(2)+'×';el('pitchValue').textContent=preferences.voicePitch.toFixed(2)+'×';}
+
+/* Use each device voice at its native speed and pitch. No voice effects. */
+delete preferences.voiceRate;delete preferences.voicePitch;preferences.tone='soft';saveSettings();
+el('voiceSettings').textContent='소리 설정';
+el('soundDialog').innerHTML='<div class="dialog-title"><h2>목소리와 음악</h2><button id="soundClose" aria-label="소리 설정 닫기">✕</button></div><p class="voice-note">목소리는 원래 속도와 높이로 읽어요. 선택하면 짧게 들어 볼 수 있어요.</p><select id="voiceChoice" hidden aria-label="기기 음성 목록"></select><div id="voiceOptions" class="voice-options"></div><div class="audio-test-row"><button id="voicePreview">🔊 목소리 듣기</button><button id="voiceStop">■ 멈추기</button></div><p id="voiceStatus" class="voice-status" role="status" aria-live="polite"></p><p id="voiceSupport" class="setting-note"></p><label>배경음악 크기<input id="musicVolume" type="range" min="0" max="50" aria-label="배경음악 크기"></label>';
+function selectedSystemVoice(){return koreanVoices.find(v=>v.voiceURI===preferences.voice)||koreanVoices.find(v=>v.localService&&v.default)||koreanVoices.find(v=>v.localService)||koreanVoices[0];}
+voiceConfig=function(){return {voice:selectedSystemVoice(),rate:1,pitch:1};};
 function renderVoiceOptions(){
  const box=el('voiceOptions');box.replaceChildren();const selected=selectedSystemVoice();
- const voices=koreanVoices.length?koreanVoices:[{name:'기기 기본 음성',voiceURI:'',lang:'ko-KR'}];
- voices.forEach((v,i)=>{const row=document.createElement('div');row.className='voice-option'+(v.voiceURI===(selected?.voiceURI||'')?' selected':'');const choose=document.createElement('button');choose.className='voice-select';choose.textContent=v.name;choose.setAttribute('aria-pressed',String(v.voiceURI===(selected?.voiceURI||'')));const note=document.createElement('small');note.textContent=koreanVoices.length?(v.localService?'기기에 설치된 음성':'온라인 제공 음성'):'한국어 음성이 준비되면 목록이 갱신돼요';choose.append(note);choose.onclick=()=>{preferences.voice=v.voiceURI;saveSettings();renderVoiceOptions();previewVoice(false);};const listen=document.createElement('button');listen.textContent='비교 듣기';listen.setAttribute('aria-label',v.name+' 비교 듣기');listen.onclick=()=>previewVoice(true,koreanVoices[i]);row.append(choose,listen);box.append(row);});
- el('voiceSupport').textContent=koreanVoices.length>1?'기기별로 음성 종류와 음질이 달라요. 말투 변경을 지원하지 않는 음성도 있어요.':koreanVoices.length===1?'이 기기는 한국어 목소리를 1개 제공하고 있어요. 다른 사람의 목소리는 선택할 수 없지만 아래에서 말투를 조절할 수 있어요.':'사용 가능한 한국어 음성을 찾지 못했어요. 태블릿의 음성 설정에서 한국어 음성이 준비되어 있는지 확인해 주세요.';
+ if(koreanVoices.length>1)for(const v of koreanVoices){const button=document.createElement('button');button.className='voice-option voice-select'+(v.voiceURI===selected?.voiceURI?' selected':'');button.textContent=v.name;button.setAttribute('aria-pressed',String(v.voiceURI===selected?.voiceURI));button.onclick=()=>{preferences.voice=v.voiceURI;saveSettings();renderVoiceOptions();previewVoice();};box.append(button);}
+ el('voiceSupport').textContent=koreanVoices.length?'속도·음높이 효과를 사용하지 않아요. 사용 가능한 한국어 목소리는 기기에 따라 달라요.':'한국어 목소리가 아직 준비되지 않았어요. 소리 테스트를 누르거나 기기의 한국어 음성 설정을 확인해 주세요.';
 }
 loadVoices=function(){const seen=new Set();koreanVoices=('speechSynthesis'in window?speechSynthesis.getVoices():[]).filter(v=>/^ko(?:[-_]|$)/i.test(v.lang)).filter(v=>{const key=v.voiceURI||v.name;if(seen.has(key))return false;seen.add(key);return true;});renderVoiceOptions();};
-let voiceSample=null,voiceSampleToken=0;
-function previewVoice(neutral=false,voice=selectedSystemVoice()){
- if(!('speechSynthesis'in window)){el('voiceStatus').textContent='이 브라우저는 음성 읽기를 지원하지 않아요.';return;}
- const token=++voiceSampleToken;speechSynthesis.cancel();speechSynthesis.resume();
- voiceSample=new SpeechSynthesisUtterance('안녕! 우리 함께 그림 친구를 찾아볼까? 천천히 살펴보면 찾을 수 있어.');voiceSample.lang='ko-KR';if(voice)voiceSample.voice=voice;voiceSample.rate=neutral?1:preferences.voiceRate;voiceSample.pitch=neutral?1:preferences.voicePitch;
- el('voiceStatus').textContent=(voice?.name||'기기 기본 음성')+(neutral?' · 기본 말투로 비교':' · 선택한 말투로 듣기');
- voiceSample.onerror=e=>{if(token===voiceSampleToken&&!['canceled','interrupted'].includes(e.error))el('voiceStatus').textContent='이 음성을 재생하지 못했어요. 다른 목소리를 선택해 주세요.';};speechSynthesis.speak(voiceSample);
-}
-el('voiceSettings').onclick=()=>{loadVoices();voiceControls();el('musicVolume').value=preferences.volume;el('voiceStatus').textContent='';el('soundDialog').showModal();};
-el('voiceTone').onchange=()=>{preferences.tone=el('voiceTone').value;const s=VOICE_STYLES[preferences.tone];if(s){preferences.voiceRate=s.rate;preferences.voicePitch=s.pitch;}saveSettings();voiceControls();previewVoice();};
-for(const id of ['voiceRate','voicePitch']){el(id).oninput=()=>{preferences[id]=Number(el(id).value);preferences.tone='custom';saveSettings();voiceControls();};el(id).onchange=()=>previewVoice();}
-el('voicePreview').onclick=()=>previewVoice();el('voiceStop').onclick=()=>{voiceSampleToken++;if('speechSynthesis'in window)speechSynthesis.cancel();el('voiceStatus').textContent='듣기를 멈췄어요.';};
-el('soundDialog').addEventListener('close',()=>{voiceSampleToken++;if('speechSynthesis'in window)speechSynthesis.cancel();});
+function previewVoice(){say('안녕! 우리 함께 그림 친구를 찾아볼까? 천천히 살펴보면 찾을 수 있어.');}
+el('voiceSettings').onclick=()=>{loadVoices();el('musicVolume').value=preferences.volume;el('voiceStatus').textContent='';el('soundDialog').showModal();};
+el('soundClose').onclick=()=>el('soundDialog').close();el('voicePreview').onclick=()=>previewVoice();el('voiceStop').onclick=()=>{if('speechSynthesis'in window)speechSynthesis.cancel();};
+el('musicVolume').oninput=()=>{preferences.volume=Number(el('musicVolume').value);saveSettings();};
 if('speechSynthesis'in window)speechSynthesis.addEventListener('voiceschanged',loadVoices);
-loadVoices();voiceControls();
+loadVoices();
 
 /* Shared user-gesture audio gate for parent and embedded games. No background autoplay. */
 let audioPreferences={guide:false,effects:true,answerRead:true};
@@ -239,7 +221,7 @@ audioOn=audioPreferences.guide;preferences.answerRead=audioPreferences.answerRea
 let audioGestureSeen=false,audioMusicRequest=0,audioEffectGain=null,audioUtterance=null,audioSpeechToken=0,audioSpeechTimer=null,audioLastStatus='소리 시작을 누르면 기기에서 소리를 준비해요.';
 const audioStyle=document.createElement('style');audioStyle.textContent='.audio-test-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.audio-test-row button{flex:1;min-height:44px}.audio-check{display:flex!important;justify-content:flex-start!important;gap:10px!important}.audio-check input{width:22px;height:22px}.audio-status{font-size:12px;line-height:1.6;color:#65765c;background:#eef2e8;border-radius:12px;padding:10px}#audioStart{background:#e7f1e0;border-color:#b6caa5}#audioStart[hidden]{display:none!important}';document.head.append(audioStyle);
 document.querySelector('.top-actions').insertAdjacentHTML('afterbegin','<button id="audioStart">🔊 소리 시작</button>');
-el('soundDialog').insertAdjacentHTML('beforeend','<h3>3. 태블릿 소리 확인</h3><label class="audio-check"><input id="answerReadToggle" type="checkbox">정답 이름과 설명 읽어 주기</label><label class="audio-check"><input id="effectsToggle" type="checkbox">정답·카드 효과음</label><div class="audio-test-row"><button id="audioSpeechTest">🔊 안내 음성 테스트</button><button id="audioEffectTest">♪ 효과음 테스트</button></div><p class="audio-status" id="audioStatus" role="status" aria-live="polite"></p><p class="setting-note">소리가 없으면 위 테스트 버튼을 눌러 주세요. 태블릿의 미디어 음량·무음 설정과 블루투스 이어폰 연결도 확인해 주세요. 온라인 음성은 인터넷 연결이 필요할 수 있어요.</p>');
+el('soundDialog').insertAdjacentHTML('beforeend','<h3>소리가 안 들릴 때</h3><label class="audio-check"><input id="answerReadToggle" type="checkbox">정답 이름과 설명 읽어 주기</label><label class="audio-check"><input id="effectsToggle" type="checkbox">정답·카드 효과음</label><div class="audio-test-row"><button id="audioSpeechTest" hidden>🔊 목소리 듣기</button><button id="audioEffectTest">♪ 효과음 테스트</button></div><p class="audio-status" id="audioStatus" role="status" aria-live="polite"></p><p class="setting-note">소리가 없으면 위 테스트 버튼을 눌러 주세요. 태블릿의 미디어 음량·무음 설정과 블루투스 이어폰 연결도 확인해 주세요. 온라인 음성은 인터넷 연결이 필요할 수 있어요.</p>');
 el('audioStatus').insertAdjacentHTML('afterend','<button id="audioReconnect">↻ 소리 다시 연결</button>');
 function saveAudioPreferences(){audioPreferences.guide=audioOn;audioPreferences.answerRead=preferences.answerRead;try{localStorage.setItem('spark-audio-v1',JSON.stringify(audioPreferences));}catch{}}
 function audioStatus(message){audioLastStatus=message;el('audioStatus').textContent=message;}
@@ -249,12 +231,13 @@ function ensureAudioContext(){
  try{if(!musicContext||musicContext.state==='closed'){musicContext=new Audio();musicGain=musicContext.createGain();musicGain.gain.value=0;musicGain.connect(musicContext.destination);audioEffectGain=null;}
   if(!audioEffectGain){audioEffectGain=musicContext.createGain();audioEffectGain.gain.value=.25;audioEffectGain.connect(musicContext.destination);}
   return musicContext;
- }catch{audioStatus('이 브라우저에서 음악·효과음을 준비하지 못했어요. 안내 음성 테스트를 눌러 주세요.');return null;}
+ }catch{audioStatus('이 브라우저에서 음악·효과음을 준비하지 못했어요. 목소리 듣기를 눌러 주세요.');return null;}
 }
 function resumeAudioFromGesture(){
  audioGestureSeen=true;const ctx=ensureAudioContext();
- if('speechSynthesis'in window){try{speechSynthesis.resume();}catch{}}
+ if('speechSynthesis'in window&&speechSynthesis.paused){try{speechSynthesis.resume();}catch{}}
  if(!ctx)return Promise.resolve(false);
+ if(ctx.state==='running')return Promise.resolve(true);
  try{return Promise.resolve(ctx.resume()).then(()=>{if(ctx.state==='running'){el('audioStart').textContent='🔊 소리 확인';return true;}audioStatus('기기가 음악을 잠시 멈췄어요. 소리 시작을 다시 눌러 주세요.');el('audioStart').hidden=false;return false;}).catch(()=>{el('audioStart').hidden=false;audioStatus('기기에서 소리 재생이 멈춰 있어요. 소리 시작을 눌러 주세요.');return false;});}catch{return Promise.resolve(false);}
 }
 function audioGesture(event){
@@ -287,29 +270,34 @@ function playFeedbackSound(kind,force=false){
 window.schoolFeedbackSound=kind=>playFeedbackSound(kind);
 
 /* Hold utterances until completion and speak synchronously inside the originating tap. */
-function cancelSchoolSpeech(){audioSpeechToken++;clearTimeout(audioSpeechTimer);audioSpeechTimer=null;if('speechSynthesis'in window)speechSynthesis.cancel();audioUtterance=null;}
+function cancelSchoolSpeech(){audioSpeechToken++;clearTimeout(audioSpeechTimer);audioSpeechTimer=null;if('speechSynthesis'in window&&(audioUtterance||speechSynthesis.speaking||speechSynthesis.pending||speechSynthesis.paused))speechSynthesis.cancel();audioUtterance=null;}
 function reliableSpeak(text,config=voiceConfig(),sample=false){
  if(!('speechSynthesis'in window)||!window.SpeechSynthesisUtterance){audioStatus('이 브라우저는 안내 음성을 지원하지 않아요. 화면의 글과 효과음으로 함께 놀 수 있어요.');return false;}
+ const message=String(text).trim();if(!message)return false;
+ // One tap can reach both a delegated handler and an answer handler. Keep the
+ // already queued/playing utterance instead of cutting it off and restarting.
+ const voiceKey=config.voice?.voiceURI||config.voice?.name||'';
+ if(audioUtterance&&audioUtterance.text===message&&(audioUtterance.voice?.voiceURI||audioUtterance.voice?.name||'')===voiceKey)return true;
  cancelSchoolSpeech();const token=audioSpeechToken;
  try{
-  const utterance=new SpeechSynthesisUtterance(String(text));audioUtterance=utterance;utterance.lang='ko-KR';utterance.rate=config.rate;utterance.pitch=config.pitch;utterance.volume=1;if(config.voice)utterance.voice=config.voice;
+  const utterance=new SpeechSynthesisUtterance(message);audioUtterance=utterance;utterance.lang='ko-KR';utterance.rate=1;utterance.pitch=1;utterance.volume=1;if(config.voice)utterance.voice=config.voice;
   utterance.onstart=()=>{if(token!==audioSpeechToken)return;clearTimeout(audioSpeechTimer);audioSpeechTimer=null;el('audioStart').textContent='🔊 소리 확인';audioStatus('안내 음성을 재생하고 있어요. 소리가 들리지 않으면 기기 음량과 출력 장치를 확인해 주세요.');};
   utterance.onend=()=>{if(token!==audioSpeechToken)return;clearTimeout(audioSpeechTimer);audioSpeechTimer=null;audioUtterance=null;audioStatus('음성 재생을 마쳤어요.');};
-  utterance.onerror=event=>{if(token!==audioSpeechToken||['canceled','interrupted'].includes(event.error))return;clearTimeout(audioSpeechTimer);audioSpeechTimer=null;audioUtterance=null;el('audioStart').hidden=false;audioStatus(event.error==='not-allowed'?'기기에서 음성 시작을 기다리고 있어요. 소리 시작 또는 안내 음성 테스트를 눌러 주세요.':'이 목소리를 재생하지 못했어요. 다른 음성을 골라 테스트해 주세요.');if(sample)el('voiceStatus').textContent=audioLastStatus;};
-  speechSynthesis.resume();speechSynthesis.speak(utterance);
-  audioSpeechTimer=setTimeout(()=>{if(token!==audioSpeechToken||audioUtterance!==utterance)return;el('audioStart').hidden=false;audioStatus('음성이 시작되지 않으면 안내 음성 테스트를 눌러 주세요. 기기의 한국어 음성 설정도 확인할 수 있어요.');},4000);
+  utterance.onerror=event=>{if(token!==audioSpeechToken)return;clearTimeout(audioSpeechTimer);audioSpeechTimer=null;audioUtterance=null;if(['canceled','interrupted'].includes(event.error))return;el('audioStart').hidden=false;audioStatus(event.error==='not-allowed'?'기기에서 음성 시작을 기다리고 있어요. 소리 시작 또는 목소리 듣기를 눌러 주세요.':'이 목소리를 재생하지 못했어요. 다른 음성을 골라 테스트해 주세요.');if(sample)el('voiceStatus').textContent=audioLastStatus;};
+  if(speechSynthesis.paused)speechSynthesis.resume();speechSynthesis.speak(utterance);
+  audioSpeechTimer=setTimeout(()=>{if(token!==audioSpeechToken||audioUtterance!==utterance)return;el('audioStart').hidden=false;audioStatus('음성이 시작되지 않으면 목소리 듣기를 눌러 주세요. 기기의 한국어 음성 설정도 확인할 수 있어요.');},4000);
   return true;
- }catch{el('audioStart').hidden=false;audioStatus('음성을 시작하지 못했어요. 안내 음성 테스트를 다시 눌러 주세요.');return false;}
+ }catch{el('audioStart').hidden=false;audioStatus('음성을 시작하지 못했어요. 목소리 듣기를 다시 눌러 주세요.');return false;}
 }
 say=function(text){return reliableSpeak(text);};window.schoolSpeak=text=>say(text);
 window.schoolReadAnswer=text=>{if(preferences.answerRead)say(text);};
-const audioBaseStop=stop;stop=function(){cancelSchoolSpeech();audioBaseStop();};
-previewVoice=function(neutral=false,voice=selectedSystemVoice()){resumeAudioFromGesture();el('voiceStatus').textContent=(voice?.name||'기기 기본 음성')+(neutral?' · 기본 말투로 비교':' · 선택한 말투로 듣기');reliableSpeak('안녕! 우리 함께 그림 친구를 찾아볼까? 천천히 살펴보면 찾을 수 있어.',{voice,rate:neutral?1:preferences.voiceRate,pitch:neutral?1:preferences.voicePitch},true);};
+const audioBaseStop=stop;stop=function(){audioSpeechToken++;clearTimeout(audioSpeechTimer);audioSpeechTimer=null;audioBaseStop();audioUtterance=null;};
+previewVoice=function(neutral=false,voice=selectedSystemVoice()){resumeAudioFromGesture();el('voiceStatus').textContent=(voice?.name||'기기 기본 음성')+(neutral?' · 기본 말투로 비교':' · 선택한 말투로 듣기');reliableSpeak('안녕! 우리 함께 그림 친구를 찾아볼까? 천천히 살펴보면 찾을 수 있어.',{voice,rate:1,pitch:1},true);};
 el('voiceStop').onclick=()=>{cancelSchoolSpeech();el('voiceStatus').textContent='듣기를 멈췄어요.';};
 el('soundDialog').addEventListener('close',cancelSchoolSpeech);
 el('voice').onclick=()=>{audioOn=!audioOn;saveAudioPreferences();refreshAudioUI();if(audioOn){resumeAudioFromGesture();say('우리 같이 차근차근 해 보자!');}else cancelSchoolSpeech();};
 el('audioStart').onclick=()=>{audioOn=true;saveAudioPreferences();refreshAudioUI();resumeAudioFromGesture();say('소리를 켰어요. 우리 같이 즐겁게 배워 볼까?');if(game&&preferences.bgm)playMusic(game.id);};
-el('audioSpeechTest').onclick=()=>{resumeAudioFromGesture();say('안내 음성 테스트예요. 이 목소리가 들리나요?');};
+el('audioSpeechTest').onclick=()=>{resumeAudioFromGesture();say('목소리 듣기예요. 이 목소리가 들리나요?');};
 el('audioEffectTest').onclick=()=>{resumeAudioFromGesture();playFeedbackSound('correct',true);audioStatus('맑은 두 음을 재생해요. 들리지 않으면 미디어 음량·무음 설정·이어폰 연결을 확인해 주세요.');};
 el('audioReconnect').onclick=()=>{stopMusic();cancelSchoolSpeech();const previous=musicContext;musicContext=null;musicGain=null;audioEffectGain=null;if(previous&&previous.state!=='closed')try{Promise.resolve(previous.close()).catch(()=>{});}catch{}resumeAudioFromGesture();if(game&&preferences.bgm)playMusic(game.id);say('소리를 다시 연결했어요. 이 목소리가 들리나요?');};
 el('effectsToggle').onchange=()=>{audioPreferences.effects=el('effectsToggle').checked;saveAudioPreferences();if(audioPreferences.effects){resumeAudioFromGesture();playFeedbackSound('correct');}};
@@ -319,6 +307,8 @@ refreshAudioUI();
 
 /* Consistent learning feedback and factual, child-specific discovery records. */
 const PICTURE_NAMES=Object.fromEntries(ICONS.map((pic,i)=>[pic,ICON_NAMES[i]]));Object.assign(PICTURE_NAMES,{'🍌':'바나나','⭐':'별','🦆':'오리','🌸':'꽃'});
+function numberSentence(text){return text.replace(/(\d+)(?:를|을)/g,(_,n)=>n+('013678'.includes(n.at(-1))?'을':'를')).replace(/(\d+)(?:이에요|예요)/g,(_,n)=>n+('013678'.includes(n.at(-1))?'이에요':'예요'));}
+const numberBeforeQuality=makeNumber;makeNumber=function(level){const question=numberBeforeQuality(level);question.explanation=numberSentence(question.explanation);return question;};
 const extraFourWords=[['할아버지','👴'],['아보카도','🥑'],['파인애플','🍍'],['오토바이','🏍️'],['스케이트','⛸️']];
 for(const [word,pic] of extraFourWords)if(!WORDS.some(w=>w.word===word))WORDS.push({word,pic,initial:syllableParts(word[0]).initial});
 // Four-syllable items have an unambiguous familiar object.
